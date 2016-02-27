@@ -34,19 +34,19 @@ public class Client {
 		if(console.readLine() != null) {
 			if(display.readLine().equalsIgnoreCase("Welcome.")) {
 				display.start();
-				console.start();
+				console.start(); 
 				synchronized (console) { 
 					try {
 						console.wait();
 					} catch (InterruptedException e) {
 						LOGGER.error("Psicho.", e);
-					} finally {
-						socket.online(false);
-						try {
-							socket.socket().close();
-						} catch (IOException e) {
-							LOGGER.error("Socket close error.", e);
-						}
-						System.out.println("Goodbye!");
-	}	}	}	}	}	
+		}	}	}	}
+		socket.online(false);
+		try {
+			socket.socket().close();
+		} catch (IOException e) {
+			LOGGER.error("Socket close error.", e);
+		}
+		System.out.println("Goodbye!");
+	}	
 }

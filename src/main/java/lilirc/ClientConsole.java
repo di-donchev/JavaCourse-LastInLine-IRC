@@ -69,7 +69,7 @@ public class ClientConsole extends Thread {
 		console.close();
 	}
 	/**
-	 * DRY
+	 * read from console and in the same time check if socket online
 	 * @return
 	 */
 	public String readLine() {
