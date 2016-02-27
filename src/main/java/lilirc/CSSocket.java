@@ -40,6 +40,7 @@ public class CSSocket {
 	private void iofactory() throws IOException {
 		output= new PrintWriter(socket.getOutputStream(), true);
 		 input= new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+		online= true;
 	}
 
 	public Socket socket() {

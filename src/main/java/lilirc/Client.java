@@ -28,19 +28,25 @@ public class Client {
 	 */
 	public void start() {
 		display= new ClientDisplay(socket);
-		display.read();
-		console= new ClientConsole(socket).hint("username:>").quit("quit");
-		if(console.read() != null) {
-			if(display.read().equalsIgnoreCase("Welcome.")) {
-				socket.online(true);
+		display.readLine();
+		console= new ClientConsole(socket).hint("console:>").quit("quit");
+		console.printHint("username:>");
+		if(console.readLine() != null) {
+			if(display.readLine().equalsIgnoreCase("Welcome.")) {
 				display.start();
-				console.hint("console:>").start();
-				synchronized (display) { 
+				console.start();
+				synchronized (console) { 
 					try {
-						display.wait();
+						console.wait();
 					} catch (InterruptedException e) {
-						LOGGER.info("Display is dead.", e);
-					}	}
-				console.close();
-	}	}	}	
+						LOGGER.error("Psicho.", e);
+					} finally {
+						socket.online(false);
+						try {
+							socket.socket().close();
+						} catch (IOException e) {
+							LOGGER.error("Socket close error.", e);
+						}
+						System.out.println("Goodbye!");
+	}	}	}	}	}	
 }

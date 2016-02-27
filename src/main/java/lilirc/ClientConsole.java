@@ -36,6 +36,18 @@ public class ClientConsole extends Thread {
 		return this;
 	}
 	/**
+	 * print external message trough Console 
+	 * @param ht
+	 * @return
+	 */
+	public ClientConsole printHint(String ht) {
+		if(ht == null) {
+			ht= hint;
+		}
+		System.out.print(ht); // in this case just console
+		return this;
+	}
+	/**
 	 * init quit word (default "quit")
 	 * @param qt
 	 * @return
@@ -50,34 +62,30 @@ public class ClientConsole extends Thread {
 	 * output it to client.output
 	 */
 	public void run() {
-		/**
-		 * there no logic to stop only client console
-		 * user must void quit word or client class to close socket 
-		 */
-		while (socket.online() && (read() != null)) {
-		}
-		close();
+		do { 
+			printHint(null);
+		} while(readLine() != null);
+		socket.online(false);
+		console.close();
 	}
 	/**
 	 * DRY
 	 * @return
 	 */
-	public String read() {
+	public String readLine() {
 		String line;
-		System.out.print(hint);
-		
-		if(!(line= console.nextLine()).equalsIgnoreCase(quit)) {
-			socket.output().println(line);
-			return line;
+		try {
+			while(socket.online()) {
+				if(System.in.available() != 0) {
+					if(!(line= console.nextLine()).equalsIgnoreCase(quit)) {
+						socket.output().println(line);
+						return line;
+					} else { 
+						break;	
+			}	}	}
+		} catch (IOException e){
+			LOGGER.error("Console error", e);
 		}
 		return null;
 	}
-	public void close() {
-		socket.online(false);
-		console.close();
-		try {
-			socket.socket().close();
-		} catch (IOException e) {
-			LOGGER.error("Close", e);
-	}	}
 }

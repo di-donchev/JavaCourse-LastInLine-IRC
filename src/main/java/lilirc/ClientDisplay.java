@@ -22,28 +22,29 @@ public class ClientDisplay extends Thread {
 	 * action of display thread
 	 */
 	public void run() {
-		while(socket.online() && (read() != null)) {
+		while(socket.online() && (readLine() != null)) {
 		}
 		socket.online(false);
-		try {
-			socket.socket().close();
-		} catch (IOException e) {
-			LOGGER.error("Close", e);
-		}
-		System.out.println("Server down. Press <Enter> to close.");
 	}
 	/**
 	 * single action
 	 * @return
 	 */
-	public String read() {
+	public String readLine() {
 		String line;
 		try { 
 	  		line = socket.input().readLine();
 			System.out.println(line);
 			return line; 
-		} catch (IOException e) { 
-			LOGGER.error("Read", e);
-			return null;
-	}	}
+		} catch (IOException e) {
+			/**
+			 * used internal java mechanism to terminate display thread from outside
+			 * in our case from ClientConsole 
+			 */
+			if(socket.online()) { // if true -> error else down
+				LOGGER.error("Socket down.", e);
+				System.out.println("Server down.");
+		}	}
+		return null;
+	}
 }
