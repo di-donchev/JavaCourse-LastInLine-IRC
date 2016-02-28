@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class TimeRuntimeTest {
-	private static final Logger LOGGER = LoggerFactory.getLogger(Server.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TimeRuntimeTest.class);
 	
 	@Test
 	public void test_is() throws InterruptedException {
