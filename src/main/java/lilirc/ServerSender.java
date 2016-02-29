@@ -17,10 +17,9 @@ public class ServerSender extends Thread {
 	 * 3. go to wait() state
 	 */
 	public void run() {
-		String line = null;
+		String line;
 		while(Server.online()) {
-			line= Server.readln();
-			if(line != null) {
+			if((line= Server.readLine()) != null) {
 				for(ServerWorker user: Server.userPool.values()) {
 					user.writeLine(line);
 			}	}

@@ -1,16 +1,15 @@
 package lilirc;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +46,7 @@ public class Server {
 			LOGGER.info("{} Server Started.", Time.is());
 			file= getnewfile();
 			output= new PrintWriter(file);
-			irc= new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
+			input= new Scanner(new FileInputStream(file));
 			sender= new ServerSender();
 			sender.start();
 			while (true) {
@@ -60,16 +59,16 @@ public class Server {
 	/**
 	 * server buffer members and io methods
 	 */
-	private static BufferedReader irc;
 	private static boolean  newBuffer= true;
 	private static File file;
 	private static PrintWriter output;
+	private static Scanner input;
 	
 	/**
 	 * create / and write to buffer 
 	 * @param line
 	 */
-	public static synchronized void println(String line) {
+	public static synchronized void printLine(String line) {
 		// check for OS file size limit
 		if(file.length() > 2000000000L) {
 			output.close();
@@ -94,32 +93,23 @@ public class Server {
 	 * read from buffer
 	 * @return
 	 */
-	public static synchronized String readln() {
+	public static synchronized String readLine() {
 		String result=null;
-		try {
-			result = irc.readLine();
-		} catch (IOException e) {
-			LOGGER.error("IRC readln", e);
-		}
-		if(result == null) {
+		try { 
+			result = input.nextLine();
+		} catch (NoSuchElementException e) {
 			if(newBuffer) {
+				input.close();
 				try {
-					irc.close();
-				} catch (IOException e) {
-					LOGGER.error("IRC close", e);
-				}
-				try {
-					irc= new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
-				} catch (FileNotFoundException e) {
-					LOGGER.error("FIle error", e);
-				}
-				try {
-					result= irc.readLine();
-				} catch (IOException e) {
-					LOGGER.error("IRC read", e);
+					input= new Scanner(new FileInputStream(file));
+				} catch (FileNotFoundException e1) {
+					LOGGER.error("FIle error", e1);
 				}
 				newBuffer= false;
-		}	}
+			} else { 
+				LOGGER.error("File read error.", e);
+			}
+		}
 		return result;
 	}
 	/**
@@ -130,15 +120,11 @@ public class Server {
 	 * getter - return server control flag value 
 	 * @return boolean
 	 */
-	public static boolean online() {
-		return online;
-	}
+	public static boolean online() { return online; }
 	/**
 	 * setter - set server control flag value and return it
 	 * @param onln
 	 * @return boolean
 	 */
-	public static boolean online(boolean onln) {
-		return online= onln;
-	}
+	public static boolean online(boolean onln) { return online= onln; }
 }

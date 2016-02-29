@@ -77,11 +77,11 @@ public class ClientConsole extends Thread {
 		try {
 			while(socket.online()) {
 				if(System.in.available() != 0) {
-					if(!(line= console.nextLine()).equalsIgnoreCase(quit)) {
+					if((line= console.nextLine()).equalsIgnoreCase(quit)) {
+						break;
+					} else { 
 						socket.output().println(line);
 						return line;
-					} else { 
-						break;	
 			}	}	}
 		} catch (IOException e){
 			LOGGER.error("Console error", e);

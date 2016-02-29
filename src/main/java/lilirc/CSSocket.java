@@ -1,18 +1,16 @@
 package lilirc;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 
 public class CSSocket {
 
 	private boolean online;
 	private Socket socket;
 	private PrintWriter output;
-	private BufferedReader input;
+	private Scanner input;
 	
 	public CSSocket(Socket soct) throws IOException {
 		socket= soct;
@@ -34,12 +32,12 @@ public class CSSocket {
 	 * return connected to socket input
 	 * @return
 	 */
-	public BufferedReader input() { // getInput
+	public Scanner input() { // getInput
 		return input;
 	}
 	private void iofactory() throws IOException {
 		output= new PrintWriter(socket.getOutputStream(), true);
-		 input= new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+		 input= new Scanner(socket.getInputStream());
 		online= true;
 	}
 

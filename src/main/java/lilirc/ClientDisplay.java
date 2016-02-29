@@ -1,15 +1,17 @@
 package lilirc;
 
-import java.io.IOException;
+import java.util.NoSuchElementException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * thread that read from server and write to display
  * @author 3D
  */
 public class ClientDisplay extends Thread {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ClientRunner.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ClientDisplay.class);
+	
 	private CSSocket socket;
 	/**
 	 * constructor with socket argument
@@ -22,7 +24,8 @@ public class ClientDisplay extends Thread {
 	 * action of display thread
 	 */
 	public void run() {
-		while(socket.online() && (readLine() != null)) {
+		while(socket.online()) {
+			readLine();
 		}
 		socket.online(false);
 	}
@@ -31,20 +34,17 @@ public class ClientDisplay extends Thread {
 	 * @return
 	 */
 	public String readLine() {
-		String line;
+		String line= null;
 		try { 
-	  		line = socket.input().readLine();
+			line = socket.input().nextLine();
+		} catch (NoSuchElementException e) {
+			if (socket.online()) { 
+				LOGGER.error("Socket closed.", e);
+			}
+		}
+		if(line != null) {
 			System.out.println(line);
-			return line; 
-		} catch (IOException e) {
-			/**
-			 * used internal java mechanism to terminate display thread from outside
-			 * in our case from ClientConsole 
-			 */
-			if(socket.online()) { // if true -> error else down
-				LOGGER.error("Socket down.", e);
-				System.out.println("Server down.");
-		}	}
-		return null;
+		}
+		return line;
 	}
 }

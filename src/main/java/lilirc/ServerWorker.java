@@ -1,6 +1,6 @@
 package lilirc;
 
-import java.io.IOException;
+import java.util.NoSuchElementException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,21 +35,25 @@ public class ServerWorker extends Thread {
 			LOGGER.info("{}[{}] username [{}]"
 					   , Time.is(), client.socket().getRemoteSocketAddress(), user);
 			Server.userPool.put(user, this);
-			client.output().println("Welcome.");
+			client.output().println("Welcome " + user + ".");
 			String line;
-			while(((line= readLine()) != null) && Server.online()) { // here thread wait user action
-				Server.println(user+":"+line);
+			while(Server.online() && ((line= readLine()) != null)) {
+				Server.printLine(user+":"+line);
 			}
 			Server.userPool.remove(user);
 	}	}
+	/**
+	 * 
+	 * @return
+	 */
 	private String readLine() {
+		String line= null;
 		try {
-			return client.input().readLine();
-		} catch (IOException e) {
-			LOGGER.error(Time.is()+"IO ERROR!", e);
-			return null;
-	}	}
-	public void writeLine(String line) {
-		client.output().println(line);
+			line= client.input().nextLine();
+		} catch (NoSuchElementException e) {
+			LOGGER.error("Client down.",e);
+		}
+		return line;	
 	}
+	public  void  writeLine(String line) { client.output().println(line); }
 }

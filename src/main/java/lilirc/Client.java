@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class Client {
+	private String username;
 	private CSSocket socket;
 	private ClientConsole console;
 	private ClientDisplay display;
@@ -29,12 +30,12 @@ public class Client {
 	public void start() {
 		display= new ClientDisplay(socket);
 		display.readLine();
-		console= new ClientConsole(socket).hint("console:>").quit("quit");
+		console= new ClientConsole(socket).quit("quit");
 		console.printHint("username:>");
-		if(console.readLine() != null) {
-			if(display.readLine().equalsIgnoreCase("Welcome.")) {
+		if((username= console.readLine()) != null) {
+			if(display.readLine().contains("Welcome")) {
 				display.start();
-				console.start(); 
+				console.hint(username + ":>").start(); 
 				synchronized (console) { 
 					try {
 						console.wait();
